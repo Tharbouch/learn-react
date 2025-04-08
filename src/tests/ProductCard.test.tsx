@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import ProductCard from "../components/ProductCard";
+import { ProductCard } from "../components/ProductCard";
 import { Product } from "../types/Product";
 
 describe("ProductCard Component", () => {
