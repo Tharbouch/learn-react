@@ -78,7 +78,7 @@ function App() {
       </a>
       <div
         id="main-content"
-        className="flex flex-col min-h-screen dark:text-white dark:bg-gray-800 bg-gray-100"
+        className="flex flex-col min-h-screen dark:text-white dark:bg-gray-800 bg-gray-100 transform transition-colors duration-300"
       >
         <Header cartCount={cart.length} />
 
