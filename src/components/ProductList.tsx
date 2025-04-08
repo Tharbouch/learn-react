@@ -1,5 +1,6 @@
 import { Product } from "@/types/Product";
 import { CartItem } from "@/types/CartItem";
+
 import ProductCard from "./ProductCard";
 
 const ProductList = ({

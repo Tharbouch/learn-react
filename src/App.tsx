@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
 import ProductList from "@/components/ProductList";
-import { Product } from "@/types/Product";
 import Header from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
-import { toast } from "sonner";
+
+import { Product } from "@/types/Product";
 import { CartItem } from "@/types/CartItem";
 
 function App() {
@@ -67,24 +69,44 @@ function App() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header cartCount={cart.length} />
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only absolute top-0 left-0 bg-white dark:bg-gray-900 text-black dark:text-white p-2 z-50"
+      >
+        Skip to content
+      </a>
+      <div
+        id="main-content"
+        className="flex flex-col min-h-screen dark:text-white dark:bg-gray-800 bg-gray-100"
+      >
+        <Header cartCount={cart.length} />
 
-      <main className="flex-grow py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-2xl font-bold mb-6 text-center">Our Products</h1>
+        <main className="flex-grow py-8">
+          <section
+            aria-labelledby="products-heading"
+            className="container mx-auto px-4"
+          >
+            <h2 className="text-2xl font-bold mb-6 text-center">
+              Our Products
+            </h2>
 
-          {error && <p className="text-red-500 text-center">Error: {error}</p>}
+            {error && (
+              <p className="text-red-500 text-center">Error: {error}</p>
+            )}
 
-          {loading ? (
-            <p className="text-center">Loading products...</p>
-          ) : (
-            <ProductList products={products} onAddToCart={handleAddToCart} />
-          )}
-        </div>
-        <Toaster position="bottom-right" richColors />
-      </main>
-    </div>
+            {loading ? (
+              <p className="text-center" role="status" aria-a>
+                Loading products...
+              </p>
+            ) : (
+              <ProductList products={products} onAddToCart={handleAddToCart} />
+            )}
+          </section>
+          <Toaster position="bottom-right" richColors />
+        </main>
+      </div>
+    </>
   );
 }
 
