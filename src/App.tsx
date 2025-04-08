@@ -96,14 +96,18 @@ function App() {
             )}
 
             {loading ? (
-              <p className="text-center" role="status" aria-a>
+              <p className="text-center" role="status" aria-live="polite">
                 Loading products...
               </p>
             ) : (
               <ProductList products={products} onAddToCart={handleAddToCart} />
             )}
           </section>
-          <Toaster position="bottom-right" richColors />
+          <Toaster
+            position="bottom-right"
+            richColors
+            className="!text-base !leading-relaxed !font-medium"
+          />
         </main>
       </div>
     </>

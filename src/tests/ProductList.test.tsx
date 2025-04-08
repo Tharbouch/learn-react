@@ -1,7 +1,28 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { render, screen } from "@testing-library/react";
 import ProductList from "../components/ProductList";
 import { Product } from "../types/Product";
+import { ThemeProvider } from "@/context/ThemProvider";
+
+beforeAll(() => {
+  // Create mock for window.matchMedia
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+});
+const renderWithTheme = (ui: React.ReactElement) => {
+  return render(<ThemeProvider>{ui}</ThemeProvider>);
+};
 
 describe("ProductList Component", () => {
   // Mock product data
@@ -33,7 +54,7 @@ describe("ProductList Component", () => {
   const mockOnAddToCart = vi.fn();
 
   it("renders a list of products correctly", () => {
-    render(
+    renderWithTheme(
       <ProductList products={mockProducts} onAddToCart={mockOnAddToCart} />
     );
 
@@ -53,14 +74,16 @@ describe("ProductList Component", () => {
   });
 
   it("displays a message when no products are available", () => {
-    render(<ProductList products={[]} onAddToCart={mockOnAddToCart} />);
+    renderWithTheme(
+      <ProductList products={[]} onAddToCart={mockOnAddToCart} />
+    );
 
     // Check if empty state message is displayed
     expect(screen.getByText(/no products found/i)).toBeInTheDocument();
   });
 
   it("renders a grid layout for products", () => {
-    render(
+    renderWithTheme(
       <ProductList products={mockProducts} onAddToCart={mockOnAddToCart} />
     );
 

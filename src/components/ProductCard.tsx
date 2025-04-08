@@ -1,5 +1,6 @@
 import { Product } from "@/types/Product";
 import { CartItem } from "@/types/CartItem";
+import { ShoppingCart } from "lucide-react";
 
 const ProductCard = ({
   product,
@@ -30,6 +31,7 @@ const ProductCard = ({
           className="bg-blue-500 dark:bg-blue-950 text-white px-4 py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800 transition-colors duration-300"
           onClick={() => onAddToCart({ ...product, quantity: 1 })}
         >
+          <ShoppingCart className="inline mr-2" size={16} />
           Add to Cart
         </button>
       </div>
