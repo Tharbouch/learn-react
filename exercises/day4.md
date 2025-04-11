@@ -1,8 +1,8 @@
-# Day 4 Exercise: Routing & Context API
+# Day 4 Exercise: Routing, Context API, State manager
 
 ## Goal
 
-Implement client-side routing to create separate views for your products and shopping cart. Use the Context API to manage global state and avoid prop drilling.
+Implement client-side routing to create separate views for your products and shopping cart. Use the Context API to manage global state and avoid prop drilling. As an advanced challenge, implement Redux Toolkit for more robust state management.
 
 ## Requirements
 
@@ -174,6 +174,168 @@ If you finish early or want an extra challenge, try one of these:
 
 - Add transition animations when navigating between pages
 - Animate the cart badge when items are added
+
+### 4. Implement Redux Toolkit
+
+For an advanced challenge, replace Context API with Redux Toolkit:
+
+- Install Redux Toolkit and React-Redux:
+
+  ```bash
+  npm install @reduxjs/toolkit react-redux
+  ```
+
+- Create a store directory structure:
+
+  ```
+  src/
+  └── store/
+      ├── index.ts
+      ├── hooks.ts
+      └── cartSlice.ts
+  ```
+
+- Implement the cart slice (`src/store/cartSlice.ts`):
+
+  ```tsx
+  import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+  import { Product } from "../types/Product";
+
+  interface CartState {
+    items: Product[];
+  }
+
+  const initialState: CartState = {
+    items: [],
+  };
+
+  export const cartSlice = createSlice({
+    name: "cart",
+    initialState,
+    reducers: {
+      addToCart: (state, action: PayloadAction<Product>) => {
+        const existingItem = state.items.find(
+          (item) => item.id === action.payload.id
+        );
+        if (!existingItem) {
+          state.items.push(action.payload);
+        }
+      },
+      removeFromCart: (state, action: PayloadAction<string>) => {
+        state.items = state.items.filter((item) => item.id !== action.payload);
+      },
+      clearCart: (state) => {
+        state.items = [];
+      },
+    },
+  });
+
+  export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+
+  export const selectCartItems = (state: { cart: CartState }) =>
+    state.cart.items;
+  export const selectCartTotal = (state: { cart: CartState }) =>
+    state.cart.items.reduce((total, item) => total + item.price, 0);
+  export const selectCartItemCount = (state: { cart: CartState }) =>
+    state.cart.items.length;
+
+  export default cartSlice.reducer;
+  ```
+
+- Set up the Redux store (`src/store/index.ts`):
+
+  ```tsx
+  import { configureStore } from "@reduxjs/toolkit";
+  import cartReducer from "./cartSlice";
+
+  export const store = configureStore({
+    reducer: {
+      cart: cartReducer,
+    },
+  });
+
+  export type RootState = ReturnType<typeof store.getState>;
+  export type AppDispatch = typeof store.dispatch;
+  ```
+
+- Create typed hooks (`src/store/hooks.ts`):
+
+  ```tsx
+  import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+  import type { RootState, AppDispatch } from "./index";
+
+  export const useAppDispatch = () => useDispatch<AppDispatch>();
+  export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+  ```
+
+- Replace the Context Provider with Redux Provider in `main.tsx`:
+
+  ```tsx
+  import { Provider as ReduxProvider } from "react-redux";
+  import { store } from "./store";
+
+  ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <ReduxProvider store={store}>
+          <App />
+        </ReduxProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+  ```
+
+- Update your components to use Redux:
+
+  - In `Header.tsx`:
+
+    ```tsx
+    import { useAppSelector } from "../store/hooks";
+    import { selectCartItemCount } from "../store/cartSlice";
+
+    function Header() {
+      const cartCount = useAppSelector(selectCartItemCount);
+      // Rest of your component
+    }
+    ```
+
+  - In `ProductsPage.tsx`:
+
+    ```tsx
+    import { useAppDispatch } from "../store/hooks";
+    import { addToCart } from "../store/cartSlice";
+
+    const ProductsPage = () => {
+      const dispatch = useAppDispatch();
+
+      const handleAddToCart = (product: Product) => {
+        dispatch(addToCart(product));
+      };
+      // Rest of your component
+    };
+    ```
+
+  - In `CartPage.tsx`:
+
+    ```tsx
+    import { useAppSelector, useAppDispatch } from "../store/hooks";
+    import {
+      selectCartItems,
+      selectCartTotal,
+      removeFromCart,
+    } from "../store/cartSlice";
+
+    const CartPage = () => {
+      const cart = useAppSelector(selectCartItems);
+      const total = useAppSelector(selectCartTotal);
+      const dispatch = useAppDispatch();
+
+      const handleRemoveFromCart = (id: string) => {
+        dispatch(removeFromCart(id));
+      };
+      // Rest of your component
+    };
+    ```
 
 ## Testing Your Implementation
 
