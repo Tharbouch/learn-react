@@ -1,17 +1,22 @@
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { toast } from "sonner";
 
 import { CartContext } from "@/hooks/useCart";
 import { CartItem } from "@/types/CartItem";
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(
+    localStorage.getItem("cart")
+      ? JSON.parse(localStorage.getItem("cart")!)
+      : []
+  );
 
   const addToCart = (product: CartItem) => {
     const existingItem = cart.find((item) => item.id === product.id);
 
     if (!existingItem) {
       setCart((prev) => [...prev, product]);
+
       toast.success(`${product.name} added to cart!`, {
         description: "Go to checkout to complete your purchase",
         duration: 2000,
@@ -49,6 +54,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = () => {
     setCart([]);
   };
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   return (
     <CartContext.Provider
