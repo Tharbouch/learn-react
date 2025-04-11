@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import ProductList from "@/components/ProductList";
 import Header from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
+import CardSkeleton from "@/components/ui/cardSkeleton";
 
 import { Product } from "@/types/Product";
 import { CartItem } from "@/types/CartItem";
@@ -96,9 +97,11 @@ function App() {
             )}
 
             {loading ? (
-              <p className="text-center" role="status" aria-live="polite">
-                Loading products...
-              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
+                {Array.from({ length: 8 }, (_, index) => (
+                  <CardSkeleton key={index} />
+                ))}
+              </div>
             ) : (
               <ProductList products={products} onAddToCart={handleAddToCart} />
             )}
